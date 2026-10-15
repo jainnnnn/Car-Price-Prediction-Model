@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Car price estimator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="masthead">
+    <h1>What is this car worth?</h1>
+    <p>
+      Describe a car and get a price estimate from a gradient boosting model trained on
+      {{ meta.n_rows }} imported cars. Prices are in US dollars.
+    </p>
+  </header>
+
+  <main class="layout">
+    <form id="car-form" class="specs" novalidate>
+      {% for group in groups %}
+      <fieldset>
+        <legend>{{ group.title }}</legend>
+        <div class="fields">
+          {% for f in group.fields %}
+          <div class="field">
+            <label for="{{ f.name }}">{{ f.label }}{% if f.unit %} <span class="unit">({{ f.unit }})</span>{% endif %}</label>
+            {% if f.kind == 'select' %}
+            <select id="{{ f.name }}" name="{{ f.name }}"{% if f.help %} aria-describedby="{{ f.name }}-help"{% endif %}>
+              {% for o in f.options %}
+              <option value="{{ o.value }}"{% if o.value == f.default %} selected{% endif %}>{{ o.label }}</option>
+              {% endfor %}
+            </select>
+            {% else %}
+            <input id="{{ f.name }}" name="{{ f.name }}" type="number" inputmode="decimal"
+                   min="{{ f.min }}" max="{{ f.max }}" step="{{ f.step }}" value="{{ f.default }}"
+                   {% if f.help %}aria-describedby="{{ f.name }}-help"{% endif %}>
+            {% endif %}
+            {% if f.help %}<small id="{{ f.name }}-help">{{ f.help }}</small>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+      {% endfor %}
+
+      <div class="actions">
+        <button type="submit" id="submit-btn">Estimate price</button>
+        <button type="reset" id="reset-btn" class="secondary">Reset to typical values</button>
+      </div>
+    </form>
+
+    <aside class="result" id="result" aria-live="polite">
+      <div id="state-empty">
+        <h2>Your estimate</h2>
+        <p>The form starts with typical values, so you can press <strong>Estimate price</strong> right away, then change specs to see how the price moves.</p>
+      </div>
+
+      <div id="state-error" hidden role="alert">
+        <h2>Check these fields</h2>
+        <ul id="error-list"></ul>
+      </div>
+
+      <div id="state-result" hidden>
+        <h2>Estimated price</h2>
+        <p class="price" id="price-main">$0</p>
+        <p class="range">Likely between <strong id="price-low"></strong> and <strong id="price-high"></strong></p>
+
+        <div class="ruler" aria-hidden="true"
+             data-min="{{ meta.price.min }}" data-max="{{ meta.price.max }}">
+          <div class="track">
+            <div class="band" id="ruler-band"></div>
+            <div class="marker" id="ruler-marker"></div>
+          </div>
+          <div class="ends">
+            <span>${{ '{:,.0f}'.format(meta.price.min) }}</span>
+            <span>${{ '{:,.0f}'.format(meta.price.max) }}</span>
+          </div>
+        </div>
+        <p class="ruler-caption">Where this sits among the cars in the training data.</p>
+
+        <ul id="notes" class="notes"></ul>
+      </div>
+
+      <dl class="model-facts">
+        <div><dt>Model accuracy (R²)</dt><dd>{{ '%.2f'|format(meta.metrics.r2) }}</dd></div>
+        <div><dt>Typical error</dt><dd>about ${{ '{:,.0f}'.format(meta.metrics.mae_usd) }}</dd></div>
+      </dl>
+    </aside>
+  </main>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
