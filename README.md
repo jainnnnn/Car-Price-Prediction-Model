@@ -2,7 +2,7 @@
 
 ---
 
-**Name:** **[Jain Prasannakumar]**
+**Name:** **Jain Prasannakumar**
 
 **Organization:** **Entri Elevate**
 
