@@ -118,7 +118,11 @@ Key limitations: the dataset has only 205 cars and describes old models, so esti
 
 ## 17. Screenshot
 
-screenshots/Screenshot 2026-10-15 122037.png
+<img width="1920" height="1080" alt="Screenshot 2026-10-15 122037" src="https://github.com/user-attachments/assets/ea7c195d-ff87-4f10-b9e7-d903320853ba" />
+
+<img width="1920" height="1080" alt="Screenshot 2026-10-15 122055" src="https://github.com/user-attachments/assets/87ca989d-dd75-4703-9b9e-2730105a0719" />
+
+<img width="1920" height="1080" alt="Screenshot 2026-10-15 122125" src="https://github.com/user-attachments/assets/725b1d1c-866e-4fcb-9c54-7826abdaf045" />
 
 ## 18. Future Work
 
